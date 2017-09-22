@@ -22,3 +22,6 @@ const filteredString = testStringOriginal
   .toUpperCase(); // change string to upper case.
 console.log("ORGINAL STRING:" + testStringOriginal);
 console.log("CONVERTED STRING:" + filteredString);
+
+const re = /oil/;
+console.log(typeof re);
