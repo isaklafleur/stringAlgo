@@ -208,7 +208,7 @@ const stringOrganizer = (stringArray, abbreviationExpensionArray) => {
       );
     } else if (string.indexOf(";") >= 0) {
       // exist a semicolon in the string
-      console.log("comma");
+      console.log("semicolon");
     } else {
       // no comma or semicolon in the string;
       console.log("only spaces found");
