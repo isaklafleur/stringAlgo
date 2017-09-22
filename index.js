@@ -21,12 +21,68 @@ var lexicon = {
   bearing: "Noun"
 };
 
-const final = [];
+strings = [
+  "screw,cap ff",
+  "angular contact (rolling) bearing",
+  "Thrust bearings",
+  "Thrust bear.",
+  "Tensioner bearing",
+  "END bearing, call me maybe",
+  "Tapped base bearing",
+  "Load bearing element 1",
+  "end bracket, testing",
+  "Hanger bearings",
+  "Flanged bearings",
+  "screw,cap",
+  "Angular contact bearing",
+  "double-row (rolling) bearing",
+  "screw,cap",
+  "end bracket, bearing bracket (US)",
+  "external-aligning (rolling) bearing",
+  "filling slot (ball) bearing",
+  "screw,cap",
+  "#2 Heating fuel oil",
+  "#4 or #6 Residual heavy fuel oils",
+  "Aluminum SAE 6000 series hot rolled coil",
+  "Aluminum, Reroll, Capacitor Foil Alloy 1145",
+  "Aluminum, Sheet, Coiled Coated, Except Conductor & Decorative For Stamping",
+  "700-R NEMA sealed industrial control relay",
+  "802R NEMA 13 sealed contact",
+  "802XR NEMA 7/9 hazardous location sealed contact",
+  "Diaphragm seals",
+  "Die cut seal kit",
+  "V ring seal",
+  "lip seal",
+  "rotary shaft lip-type seal",
+  "rubber-covered rotary shaft lip-type seal",
+  "seal, O-ring",
+  "seal kit",
+  "motor with standardized mounting dimensions",
+  "Connector to screw",
+  "Earthing lug for cable screw gland",
+  "Orthodontic expansion screws",
+  "Self drilling tapping screw",
+  "screw assembly",
+  "screw",
+  "screw and washer assembly (sems)",
+  "BOLT,M6-1.0",
+  "BOLT,HEX METRIC M6",
+  "BOLT M6X25MM",
+  "BOLT,M6X25MM HF",
+  "NUT HEX FLG M6 1.0",
+  "NUT HEX LOCK M6X1.0.00",
+  "NUT,JAM,M6-1",
+  "SCREW;CAP",
+  "SCREW.CAP",
+  "MOUNT,CALIBER,50,M6"
+];
 
 const synonyms = [
   { master: "radial shaft seal", synonym: "lip seal" },
   { master: "motor", synonym: "engine" }
 ];
+
+const specialWords = ["o-ring", "v ring", "v-ring"];
 
 const abbreviations = [
   { abbreviation: "ASSY", expansion: "ASSEMBLY" },
@@ -51,11 +107,6 @@ const abbreviations = [
   { abbreviation: "REDUC.", expansion: "REDUCER" },
   { abbreviation: "REGUL.", expansion: "REGULATOR" }
 ];
-const testStringOriginal = "CYLiND, hd444 ew/dd 4444";
-const doc = npl(testStringOriginal, lexicon);
-const filterPattern1 = /[^a-zA-Z]+/g; // find all non English alphabetic characters.
-const filterPattern2 = /\b\w{1,3}\b/g; // find words that are less then three characters long.
-const filterPattern3 = /\s\s+/g; // find multiple whitespace, tabs, newlines, etc.
 
 // https://en.wikipedia.org/wiki/Delimiter
 const _stringSplit = stringToSplit => {
@@ -79,6 +130,7 @@ const _stringSplit = stringToSplit => {
 
 const _findAbbreviations = (string, abbreviationExpensionArray) => {
   const stringArray = _stringSplit(string);
+
   const abbreviationMatches = [];
   abbreviationExpensionArray.forEach(item => {
     if (stringArray.indexOf(item.abbreviation) >= 0) {
@@ -115,6 +167,9 @@ const _replaceAbbreviationsWithExpansions = (
 };
 
 const regexString = (string, abbreviationExpensionArray) => {
+  const filterPattern1 = /[^a-zA-Z]+/g; // find all non English alphabetic characters.
+  const filterPattern2 = /\b\w{1,2}\b/g; // find words that are less then three characters long.
+  const filterPattern3 = /\s\s+/g; // find multiple whitespace, tabs, newlines, etc.
   const filteredString = _replaceAbbreviationsWithExpansions(
     string,
     abbreviationExpensionArray
@@ -131,8 +186,51 @@ const regexString = (string, abbreviationExpensionArray) => {
   return filteredString;
 };
 
-console.log(regexString(testStringOriginal, abbreviations));
+const stringOrganizer = (stringArray, abbreviationExpensionArray) => {
+  const fixedStrings = [];
+  stringArray.forEach(string => {
+    const regStr = regexString(string, abbreviations).split(" ");
+    if (string.indexOf(",") >= 0) {
+      // exist a comma in the string
+      const cleanedString = _replaceAbbreviationsWithExpansions(
+        string,
+        abbreviations
+      );
+      const textAfterComma = cleanedString
+        .substring(cleanedString.indexOf(",") + 1)
+        .trim();
+      const textBeforeComma = cleanedString.replace(textAfterComma, "").trim();
 
+      console.log(
+        textAfterComma.length
+          ? `${textBeforeComma} ${textAfterComma}`
+          : textBeforeComma
+      );
+    } else if (string.indexOf(";") >= 0) {
+      // exist a semicolon in the string
+      console.log("comma");
+    } else {
+      // no comma or semicolon in the string;
+      console.log("only spaces found");
+    }
+    /*
+    fixedStrings.push({
+      oldString: string,
+      newString: regStr.join(" "),
+      noun:
+        string.indexOf(",") >= 0 || string.indexOf(";") >= 0
+          ? regStr[0]
+          : regStr[regStr.length - 1]
+    }); */
+  });
+  //return fixedStrings;
+};
+
+console.log(stringOrganizer(strings, abbreviations));
+
+/* console.time("Hello");
+console.log(regexString(testStringOriginal, abbreviations));
+console.timeEnd("Hello"); */
 /* function partOfSpeech(document) {
   let obj = {};
   obj.nouns = document
