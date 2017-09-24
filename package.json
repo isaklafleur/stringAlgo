@@ -9,6 +9,7 @@
   "author": "Isak La Fleur",
   "dependencies": {
     "compromise": "^10.7.2",
+    "csv-parse": "^1.2.3",
     "natural": "^0.5.4",
     "node-wordnet": "^0.1.12",
     "wndb-with-exceptions": "^3.0.2"
